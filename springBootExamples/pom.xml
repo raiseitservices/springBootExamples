@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
 	<groupId>com.parthi.spring</groupId>
-	<artifactId>springBootExamples</artifactId>
+	<!-- Keep it kebab case to make spotify plugin happy -->
+	<artifactId>spring-boot-examples</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
@@ -15,12 +15,14 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.0.2.RELEASE</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<!-- mirrors the created repo -->
+		<docker.image.prefix>cparthiban/spring-boot</docker.image.prefix>
 		<java.version>1.8</java.version>
 	</properties>
 
@@ -43,8 +45,25 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			<plugin>
+            <groupId>com.spotify</groupId>
+            <artifactId>dockerfile-maven-plugin</artifactId>
+            <version>1.3.6</version>
+            <configuration>
+            		<imageName>hub.docker.com/${project.build.finalName}</imageName>
+                <repository>${docker.image.prefix}/${project.artifactId}</repository>
+                <buildArgs>
+                    <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
+                </buildArgs>
+            </configuration>
+        </plugin>
 		</plugins>
 	</build>
 
+<!-- To execute the docker image -->
+<!-- docker run -p 8080:8080 -t cparthiban/spring-boot/spring-boot-examples:latest -->
+
+<!-- docker tag cparthiban/spring-boot/spring-boot-examples:latest cparthiban/spring-boot -->
+<!-- docker push cparthiban/spring-boot/spring-boot-examples:latest -->
 
 </project>
